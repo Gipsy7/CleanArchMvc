@@ -12,7 +12,7 @@ namespace CleanArchMvc.Infra.Data.Repositories
 {
     public class ProductRepository : IProductRepository
     {
-        ApplicationDbContext _productContext;
+        readonly ApplicationDbContext _productContext;
         public ProductRepository(ApplicationDbContext context)
         {
             _productContext = context;

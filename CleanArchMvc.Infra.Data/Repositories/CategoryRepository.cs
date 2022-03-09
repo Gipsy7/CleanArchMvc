@@ -9,7 +9,7 @@ namespace CleanArchMvc.Infra.Data.Repositories
 {
     public class CategoryRepository : ICategoryRepository
     {
-        ApplicationDbContext _categoryContext;
+        readonly ApplicationDbContext _categoryContext;
         public CategoryRepository(ApplicationDbContext context)
         {
             _categoryContext = context;
