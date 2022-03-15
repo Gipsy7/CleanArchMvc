@@ -2,7 +2,7 @@
 
 namespace CleanArchMvc.WebUI.ViewMoldels
 {
-    public class LoginViewModels
+    public class LoginViewModel
     {
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress(ErrorMessage = "Invalid format email")]
