@@ -1,7 +1,9 @@
 ﻿using CleanArchMvc.Application.DTOs;
 using CleanArchMvc.Application.Interfaces;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace CleanArchMvc.WebUI.Controllers
@@ -10,10 +12,12 @@ namespace CleanArchMvc.WebUI.Controllers
     {
         private readonly IProductService _productService;
         private readonly ICategoryService _categoryService;
-        public ProductsController(IProductService productService, ICategoryService categoryService)
+        private readonly IWebHostEnvironment _environment;
+        public ProductsController(IProductService productService, ICategoryService categoryService, IWebHostEnvironment environment)
         {
             _productService = productService;
             _categoryService = categoryService;
+            _environment = environment;
         }
 
         [HttpGet]
@@ -50,11 +54,11 @@ namespace CleanArchMvc.WebUI.Controllers
         [HttpGet()]
         public async Task<IActionResult> Edit(int? id)
         {
-            if(id == null) return NotFound();
+            if (id == null) return NotFound();
 
             var productDto = await _productService.GetByIdAsync(id);
 
-            if(productDto == null) return NotFound();
+            if (productDto == null) return NotFound();
 
             var categories = await _categoryService.GetCategoriesAsync();
             ViewBag.CategoryId = new SelectList(categories, "Id", "Name", productDto.CategoryId);
@@ -81,11 +85,11 @@ namespace CleanArchMvc.WebUI.Controllers
         [HttpGet()]
         public async Task<IActionResult> Delete(int? id)
         {
-            if(id ==null) return NotFound();    
+            if (id == null) return NotFound();
 
             var productDto = await _productService.GetByIdAsync(id);
 
-            if(productDto == null) return NotFound();
+            if (productDto == null) return NotFound();
 
             return View(productDto);
         }
@@ -95,6 +99,20 @@ namespace CleanArchMvc.WebUI.Controllers
         {
             await _productService.RemoveAsync(id);
             return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null) return NotFound();
+            var productDto = await _productService.GetByIdAsync(id);
+
+            if (productDto == null) return NotFound();
+            var wwwroot = _environment.WebRootPath;
+            var image = Path.Combine(wwwroot, "images\\" + productDto.Image);
+            var exists = System.IO.File.Exists(image);
+            ViewBag.ImageExist = exists;
+
+            return View(productDto);
         }
     }
 }
