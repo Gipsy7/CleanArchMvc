@@ -1,6 +1,6 @@
 ﻿using CleanArchMvc.API.Models;
 using CleanArchMvc.Domain.Account;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -41,7 +41,7 @@ namespace CleanArchMvc.API.Controllers
                 return BadRequest(ModelState);
             }
         }
-
+        [AllowAnonymous]
         [HttpPost("LoginUser")]
         public async Task<ActionResult<UserToken>> Login([FromBody] LoginModel userInfo)
         {
@@ -58,7 +58,7 @@ namespace CleanArchMvc.API.Controllers
             }
         }
 
-        private ActionResult<UserToken> GenerateToken(LoginModel userInfo)
+        private UserToken GenerateToken(LoginModel userInfo)
         {
             //User statements
             var claims = new[]
@@ -69,7 +69,8 @@ namespace CleanArchMvc.API.Controllers
             };
 
             //Generate private key to sign the token
-            var privateKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
+            var privateKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
 
             //Generate digital signature
             var credentials = new SigningCredentials(privateKey, SecurityAlgorithms.HmacSha256);
